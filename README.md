@@ -142,3 +142,28 @@ twitter-UserTweets-*.json     # Twitter export data
 ## License
 
 MIT
+## Deploying to Discloud
+
+You can deploy this bot to [Discloud](https://discloudbot.com/) for easy hosting.
+
+### Steps
+
+1. **Import the repository on Discloud**  
+   - Go to the Discloud dashboard and select "Import from GitHub".
+   - Authorize access and select this repository.
+
+2. **Environment Variables**  
+   - On Discloud, set the following environment variables in the dashboard:
+     - `DISCORD_BOT_TOKEN`
+     - `OPENAI_API_KEY`
+     - `PORT` (e.g., 3000)
+     - `NODE_ENV` (optional, e.g., `production`)
+
+3. **Build & Start**  
+   - Discloud will automatically run `pnpm install` and use the `start` script (`node dist/index.js`).
+   - Ensure you have built the project (`pnpm run build`) before deploying, or set up a `postinstall` script to build automatically.
+
+4. **.env File**  
+   - Do not upload your `.env` file; use the Discloud dashboard to set secrets.
+
+For more details, see the [Discloud documentation](https://docs.discloudbot.com/).
