@@ -10,7 +10,6 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit"
   },
-  "packageManager": "pnpm@8.0.0",
   "keywords": ["discord", "bot", "ai", "twitter", "fastify"],
   "author": "",
   "license": "MIT",

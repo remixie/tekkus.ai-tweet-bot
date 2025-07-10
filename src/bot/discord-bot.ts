@@ -11,6 +11,7 @@ import { AIService } from "../services/ai-service";
 export class DiscordBot {
   private client: Client;
   private aiService: AIService;
+  private readonly mainHandle: string;
 
   constructor(aiService: AIService) {
     this.client = new Client({
@@ -23,6 +24,7 @@ export class DiscordBot {
     });
 
     this.aiService = aiService;
+    this.mainHandle = process.env.MAIN_TWITTER_HANDLE!;
 
     this.setupEventHandlers();
   }
@@ -30,7 +32,6 @@ export class DiscordBot {
   private setupEventHandlers() {
     this.client.on("ready", async () => {
       console.log(`Logged in as ${this.client.user?.tag}!`);
-      await this.registerSlashCommands();
     });
 
     this.client.on("messageCreate", async (message) => {
@@ -46,30 +47,12 @@ export class DiscordBot {
     });
   }
 
-  private async registerSlashCommands() {
-    const commands: any[] = [];
-
-    const rest = new REST({ version: "10" }).setToken(
-      process.env.DISCORD_BOT_TOKEN!,
-    );
-
-    try {
-      console.log("Started refreshing application (/) commands.");
-      await rest.put(Routes.applicationCommands(this.client.user!.id), {
-        body: commands,
-      });
-      console.log("Successfully reloaded application (/) commands.");
-    } catch (error) {
-      console.error("Error registering slash commands:", error);
-    }
-  }
-
   private async handleMentionMessage(message: any) {
     try {
       const question = message.content.replace(/<@!?\d+>/g, "").trim();
 
       if (!question) {
-        await message.reply("Hi! Ask me anything about @tekkusai or AI!");
+        await message.reply(`Hi! Ask me anything about @${this.mainHandle}`);
         return;
       }
 

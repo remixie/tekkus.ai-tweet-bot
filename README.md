@@ -1,6 +1,6 @@
 # Tekkusai AI Discord Bot
 
-A Discord AI bot that uses @tekkusai's complete Twitter history to answer questions about AI, technology, products, and related topics with deep contextual knowledge.
+A Discord AI bot that uses a configurable Twitter account's complete history to answer questions about AI, technology, products, and related topics with deep contextual knowledge.
 
 ## Deploying to Render
 
@@ -21,7 +21,7 @@ A Discord AI bot that uses @tekkusai's complete Twitter history to answer questi
 - **JSON-Based Tweet Data**: Loads complete Twitter history from JSON export file
 - **Smart Search System**: Node.js-based grep search through entire tweet history
 - **Discord Mention Integration**: Responds to @mentions (no slash commands)
-- **Deep Historical Context**: Includes retweets from @KurosunCo and @GLSSWRKSGG
+- **Deep Historical Context**: Includes retweets from configurable business accounts
 - **AI Responses**: Uses OpenAI models to generate accurate, data-driven responses
 - **REST API**: Fastify server with tweet search and management endpoints
 
@@ -48,7 +48,10 @@ pnpm install
 
 3. Place your Twitter JSON export file in the project root:
 ```bash
-# File should be named: twitter-UserTweets-1752162517013.json
+# File should be named: twitter-UserTweets-{handle}.json
+# Examples:
+# twitter-UserTweets-tekkusai.json
+# twitter-UserTweets-kurosunco.json
 ```
 
 4. Copy the environment file and configure it:
@@ -61,6 +64,8 @@ cp .env.example .env
 DISCORD_BOT_TOKEN=your_discord_bot_token_here
 OPENAI_API_KEY=your_openai_api_key_here
 PORT=3000
+MAIN_TWITTER_HANDLE=tekkusai
+RETWEET_HANDLES=glsswrksgg,kurosunco
 ```
 
 ### Discord Bot Setup
@@ -95,7 +100,7 @@ Simply @mention the bot with your question:
 @BotName tell me about the samurai mousepad
 ```
 
-The bot will search through @tekkusai's complete Twitter history and provide accurate, concise answers with sources.
+The bot will search through the configured Twitter account's complete history and provide accurate, concise answers with sources.
 
 ### API Endpoints
 
@@ -113,12 +118,14 @@ The bot will search through @tekkusai's complete Twitter history and provide acc
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DISCORD_BOT_TOKEN` | Discord bot token | Yes |
-| `OPENAI_API_KEY` | OpenAI API key | Yes |
-| `PORT` | Server port | No (default: 3000) |
-| `NODE_ENV` | Environment | No (default: development) |
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `DISCORD_BOT_TOKEN` | Discord bot token | Yes | - |
+| `OPENAI_API_KEY` | OpenAI API key | Yes | - |
+| `PORT` | Server port | No | 3000 |
+| `NODE_ENV` | Environment | No | development |
+| `MAIN_TWITTER_HANDLE` | Main Twitter handle (without @) | No | tekkusai |
+| `RETWEET_HANDLES` | Comma-separated handles to include retweets from | No | glsswrksgg,kurosunco |
 
 ## Development
 
@@ -147,7 +154,7 @@ twitter-UserTweets-*.json     # Twitter export data
 - **Complete History**: Loads entire Twitter history from JSON export file
 - **Smart Search**: Uses Node.js grep to search through ALL tweets, not just recent ones
 - **Relevant Context**: Finds up to 200 most relevant tweets for each query
-- **Important Retweets**: Includes retweets from @KurosunCo and @GLSSWRKSGG business accounts
+- **Important Retweets**: Includes retweets from configurable business accounts
 - **Concise Responses**: Provides brief, direct answers with exact dates when possible
 - **Source Attribution**: All responses include "Sources: [URLs]" for verification
 - **Mention-Based**: Responds to @mentions, no slash commands needed
