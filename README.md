@@ -2,6 +2,20 @@
 
 A Discord AI bot that uses @tekkusai's complete Twitter history to answer questions about AI, technology, products, and related topics with deep contextual knowledge.
 
+## Deploying to Render
+
+1. **Import the repository into Render via GitHub.**
+2. **Set up environment variables:**
+   - Go to the Render dashboard, select your service, and add all variables from `.env.example` in the "Environment" tab.
+3. **Build command:**
+   - Use `pnpm install && pnpm build` or `npm install && npm run build`.
+4. **Start command:**
+   - Use `node dist/index.js`.
+5. **Persistent process:**
+   - Ensure the service is set to "Web Service" for persistent uptime.
+6. **.env setup:**
+   - Do not commit your `.env` file; use the Render dashboard for secrets.
+
 ## Features
 
 - **JSON-Based Tweet Data**: Loads complete Twitter history from JSON export file
