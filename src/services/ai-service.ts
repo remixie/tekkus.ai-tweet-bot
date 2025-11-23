@@ -35,7 +35,7 @@ interface JsonTweet {
 }
 
 export class AIService {
-  private openai: OpenAI;
+  private cerebras: OpenAI;
   private tweets: Tweet[] = [];
   private readonly jsonFilePath: string;
   private jsonData: JsonTweet[] = [];
@@ -44,13 +44,14 @@ export class AIService {
   private readonly retweetHandles: string[];
 
   constructor() {
-    const apiKey = process.env["OPENAI_API_KEY"];
+    const apiKey = process.env["CEREBRAS_API_KEY"];
     if (!apiKey) {
-      throw new Error("OPENAI_API_KEY environment variable is required");
+      throw new Error("CEREBRAS_API_KEY environment variable is required");
     }
 
-    this.openai = new OpenAI({
+    this.cerebras = new OpenAI({
       apiKey: apiKey,
+      baseURL: "https://api.cerebras.ai/v1",
     });
 
     this.mainHandle = process.env.MAIN_TWITTER_HANDLE!;
@@ -74,8 +75,8 @@ export class AIService {
       const context = this.buildSmartContext(userMessage, tweetsToUse);
       const systemPrompt = this.buildSystemPrompt(context);
 
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4.1",
+      const response = await this.cerebras.chat.completions.create({
+        model: "zai-glm-4.6",
         messages: [
           {
             role: "system",
