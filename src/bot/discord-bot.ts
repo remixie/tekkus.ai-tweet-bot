@@ -5,6 +5,7 @@ import {
   ChatInputCommandInteraction,
   REST,
   Routes,
+  Message,
 } from "discord.js";
 import { AIService } from "../services/ai-service";
 
@@ -49,6 +50,21 @@ export class DiscordBot {
 
   private async handleMentionMessage(message: any) {
     try {
+      let context = "";
+      
+      // Check if this is a reply to a bot message
+      if (message.reference && message.reference.messageId) {
+        try {
+          const referencedMessage = await this.fetchReferencedMessage(message);
+          if (referencedMessage && referencedMessage.author.id === this.client.user!.id) {
+            context = this.buildReplyContext(referencedMessage);
+            context = this.truncateContext(context);
+          }
+        } catch (error) {
+          console.error("Could not fetch referenced message:", error);
+        }
+      }
+      
       const question = message.content.replace(/<@!?\d+>/g, "").trim();
 
       if (!question) {
@@ -56,7 +72,8 @@ export class DiscordBot {
         return;
       }
 
-      const response = await this.aiService.generateResponse(question);
+      const fullPrompt = context + question;
+      const response = await this.aiService.generateResponse(fullPrompt);
       const chunks = this.splitMessage(response);
 
       await message.reply(chunks[0]);
@@ -70,6 +87,34 @@ export class DiscordBot {
         "Sorry, I encountered an error. Please try again later.",
       );
     }
+  }
+
+  private async fetchReferencedMessage(message: any): Promise<Message | null> {
+    if (!message.reference?.messageId) return null;
+    
+    try {
+      const referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
+      return referencedMessage;
+    } catch (error: any) {
+      if (error.code === 10008) { // Unknown Message
+        console.log("Referenced message was deleted");
+      } else if (error.code === 50001) { // Missing Access
+        console.log("Bot doesn't have permission to access referenced message");
+      } else {
+        console.error("Error fetching referenced message:", error);
+      }
+      return null;
+    }
+  }
+
+  private buildReplyContext(referencedMessage: Message): string {
+    const timestamp = referencedMessage.createdAt.toLocaleString();
+    return `Previous conversation (${timestamp}):\nBot: "${referencedMessage.content}"\n\nUser is replying to this message.\n\n`;
+  }
+
+  private truncateContext(context: string, maxLength: number = 500): string {
+    if (context.length <= maxLength) return context;
+    return context.substring(0, maxLength - 3) + "...";
   }
 
   private splitMessage(message: string): string[] {
